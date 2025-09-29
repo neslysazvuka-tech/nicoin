@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой Кошелек - Nicoin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-icon">₿</span>
+                <span class="logo-text">Nicoin</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link">Главная</a></li>
+                <li><a href="marketplace.html" class="nav-link">Торговать</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container" style="padding-top: 100px;">
+        <h1 class="section-title">Мой Кошелек</h1>
+        
+        <div class="wallet-grid">
+            <div class="wallet-card">
+                <h3>Баланс Nicoin</h3>
+                <div class="balance" id="nicoin-balance">0.00</div>
+                <div class="balance-usd" id="balance-usd">$0.00</div>
+            </div>
+            
+            <div class="wallet-card">
+                <h3>Портфель</h3>
+                <div class="portfolio-stats">
+                    <div class="stat">
+                        <span>Общая стоимость:</span>
+                        <span id="total-value">$0.00</span>
+                    </div>
+                    <div class="stat">
+                        <span>Доходность:</span>
+                        <span id="profit-loss" class="positive">+0.00%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="transaction-history">
+            <h3>История транзакций</h3>
+            <div class="transactions-list" id="transactions-list">
+                <div class="empty-state">Транзакций пока нет</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        class Wallet {
+            constructor() {
+                this.balance = 0;
+                this.transactions = [];
+                this.init();
+            }
+            
+            init() {
+                this.loadFromStorage();
+                this.updateDisplay();
+            }
+            
+            loadFromStorage() {
+                const saved = localStorage.getItem('nicoinWallet');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    this.balance = data.balance || 0;
+                    this.transactions = data.transactions || [];
+                }
+            }
+            
+            saveToStorage() {
+                const data = {
+                    balance: this.balance,
+                    transactions: this.transactions
+                };
+                localStorage.setItem('nicoinWallet', JSON.stringify(data));
+            }
+            
+            addTransaction(type, amount, price) {
+                const transaction = {
+                    id: Date.now(),
+                    type,
+                    amount,
+                    price,
+                    timestamp: new Date().toLocaleString(),
+                    total: type === 'buy' ? amount * price : amount * price * 0.99
+                };
+                
+                this.transactions.unshift(transaction);
+                
+                if (type === 'buy') {
+                    this.balance += amount;
+                } else {
+                    this.balance -= amount;
+                }
+                
+                this.saveToStorage();
+                this.updateDisplay();
+            }
+            
+            updateDisplay() {
+                const balanceElement = document.getElementById('nicoin-balance');
+                const usdElement = document.getElementById('balance-usd');
+                const totalValueElement = document.getElementById('total-value');
+                const profitLossElement = document.getElementById('profit-loss');
+                const transactionsList = document.getElementById('transactions-list');
+                
+                if (balanceElement) {
+                    balanceElement.textContent = this.balance.toFixed(2);
+                }
+                
+                const currentPrice = window.nicoin ? window.nicoin.price : 1.00;
+                const totalValue = this.balance * currentPrice;
+                
+                if (usdElement) {
+                    usdElement.textContent = `$${totalValue.toFixed(2)}`;
+                }
+                
+                if (totalValueElement) {
+                    totalValueElement.textContent = `$${totalValue.toFixed(2)}`;
+                }
+                
+                if (profitLossElement) {
+                    const avgPrice = this.getAverageBuyPrice();
+                    const profitLoss = avgPrice > 0 ? ((currentPrice - avgPrice) / avgPrice * 100) : 0;
+                    profitLossElement.textContent = `${profitLoss >= 0 ? '+' : ''}${profitLoss.toFixed(2)}%`;
+                    profitLossElement.className = profitLoss >= 0 ? 'positive' : 'negative';
+                }
+                
+                if (transactionsList) {
+                    if (this.transactions.length === 0) {
+                        transactionsList.innerHTML = '<div class="empty-state">Транзакций пока нет</div>';
+                    } else {
+                        transactionsList.innerHTML = this.transactions.map(tx => `
+                            <div class="transaction-item ${tx.type}">
+                                <div class="tx-info">
+                                    <span class="tx-type">${tx.type === 'buy' ? 'Покупка' : 'Продажа'}</span>
+                                    <span class="tx-date">${tx.timestamp}</span>
+                                </div>
+                                <div class="tx-amount">
+                                    <span class="amount">${tx.amount} NICOIN</span>
+                                    <span class="value">$${tx.total.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        `).join('');
+                    }
+                }
+            }
+            
+            getAverageBuyPrice() {
+                const buyTransactions = this.transactions.filter(tx => tx.type === 'buy');
+                if (buyTransactions.length === 0) return 0;
+                
+                const totalCost = buyTransactions.reduce((sum, tx) => sum + tx.total, 0);
+                const totalAmount = buyTransactions.reduce((sum, tx) => sum + tx.amount, 0);
+                
+                return totalCost / totalAmount;
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            window.wallet = new Wallet();
+        });
+    </script>
+
+    <style>
+        .wallet-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .wallet-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+        
+        .wallet-card h3 {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+        
+        .balance {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .balance-usd {
+            font-size: 1.5rem;
+            color: var(--text-light);
+        }
+        
+        .portfolio-stats {
+            text-align: left;
+        }
+        
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .transaction-history {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+        
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+        
+        .tx-type {
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .tx-date {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .amount {
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .value {
+            color: var(--text-light);
+        }
+        
+        .transaction-item.buy .tx-type {
+            color: var(--accent);
+        }
+        
+        .transaction-item.sell .tx-type {
+            color: #ef4444;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: var(--text-light);
+            padding: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .wallet-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>
