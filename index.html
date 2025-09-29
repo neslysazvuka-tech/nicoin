@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nicoin - Криптовалюта будущего</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-icon">₿</span>
+                <span class="logo-text">Nicoin</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link">Главная</a></li>
+                <li><a href="#about" class="nav-link">О Nicoin</a></li>
+                <li><a href="#market" class="nav-link">Рынок</a></li>
+                <li><a href="wallet.html" class="nav-link">Кошелек</a></li>
+                <li><a href="marketplace.html" class="nav-link">Торговать</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="gradient-text">Nicoin</span> - 
+                Криптовалюта нового поколения
+            </h1>
+            <p class="hero-description">
+                Инновационная цифровая валюта с ежедневным ростом и 
+                передовой технологией блокчейн
+            </p>
+            <div class="hero-buttons">
+                <a href="wallet.html" class="btn btn-primary">Создать кошелек</a>
+                <a href="#market" class="btn btn-secondary">Купить Nicoin</a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="coin-animation">
+                <div class="coin">N</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="market" class="market-section">
+        <div class="container">
+            <h2 class="section-title">Рыночные данные</h2>
+            <div class="market-data">
+                <div class="price-card">
+                    <h3>Текущая цена</h3>
+                    <div class="price" id="current-price">$1.00</div>
+                    <div class="price-change positive" id="price-change">+0.00%</div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">Рыночная капитализация</span>
+                        <span class="stat-value" id="market-cap">$1,000,000</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Объем торгов</span>
+                        <span class="stat-value" id="volume">$50,000</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Всего Nicoin</span>
+                        <span class="stat-value" id="total-supply">1,000,000</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about-section">
+        <div class="container">
+            <h2 class="section-title">Почему Nicoin?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Ежедневный рост</h3>
+                    <p>Цена Nicoin увеличивается каждый день благодаря алгоритму стабильного роста</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Безопасность</h3>
+                    <p>Передовые технологии шифрования защищают ваши инвестиции</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Скорость</h3>
+                    <p>Мгновенные транзакции с минимальными комиссиями</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Nicoin. Все права защищены.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
